@@ -1,5 +1,4 @@
-﻿using DDDCommon.Domain.Types;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,20 +8,12 @@ namespace DDDCommon.Domain.Types
     // source: https://github.com/jhewlett/ValueObject
     public abstract class ValueObject : IEquatable<ValueObject>
     {
-        private List<PropertyInfo> properties;
-        private List<FieldInfo> fields;
+        private List<PropertyInfo> _properties;
+        private List<FieldInfo> _fields;
 
         public static bool operator ==(ValueObject obj1, ValueObject obj2)
         {
-            if (Equals(obj1, null))
-            {
-                if (Equals(obj2, null))
-                {
-                    return true;
-                }
-                return false;
-            }
-            return obj1.Equals(obj2);
+            return obj1?.Equals(obj2) ?? Equals(obj2, null);
         }
 
         public static bool operator !=(ValueObject obj1, ValueObject obj2)
@@ -55,9 +46,9 @@ namespace DDDCommon.Domain.Types
 
         private IEnumerable<PropertyInfo> GetProperties()
         {
-            if (properties == null)
+            if (_properties == null)
             {
-                properties = GetType()
+                _properties = GetType()
                     .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                     .Where(p => p.GetCustomAttribute(typeof(IgnoreMemberAttribute)) == null)
                     .ToList();
@@ -66,49 +57,31 @@ namespace DDDCommon.Domain.Types
                 // !Attribute.IsDefined(p, typeof(IgnoreMemberAttribute))).ToList();
             }
 
-            return properties;
+            return _properties;
         }
 
-        private IEnumerable<FieldInfo> GetFields()
-        {
-            if (fields == null)
-            {
-                fields = GetType().GetFields(BindingFlags.Instance | BindingFlags.Public)
-                    .Where(p => p.GetCustomAttribute(typeof(IgnoreMemberAttribute)) == null)
-                    .ToList();
-            }
-
-            return fields;
-        }
+        private IEnumerable<FieldInfo> GetFields() =>
+            _fields ?? (_fields = GetType().GetFields(BindingFlags.Instance | BindingFlags.Public)
+                .Where(p => p.GetCustomAttribute(typeof(IgnoreMemberAttribute)) == null)
+                .ToList());
 
         public override int GetHashCode()
         {
-            unchecked   // allow overflow
-            {
-                int hash = 17;
-                foreach (var prop in GetProperties())
-                {
-                    var value = prop.GetValue(this, null);
-                    hash = HashValue(hash, value);
-                }
+            var hash = GetProperties().Select(prop => prop.GetValue(this, null))
+                .Aggregate(17, HashValue);
 
-                foreach (var field in GetFields())
-                {
-                    var value = field.GetValue(this);
-                    hash = HashValue(hash, value);
-                }
-
-                return hash;
-            }
+            return GetFields().Select(field => field.GetValue(this))
+                .Aggregate(hash, HashValue);
         }
 
-        private int HashValue(int seed, object value)
+        private static int HashValue(int seed, object value)
         {
-            var currentHash = value != null
-                ? value.GetHashCode()
-                : 0;
+            var currentHash = value?.GetHashCode() ?? 0;
 
-            return seed * 23 + currentHash;
+            unchecked
+            {
+                return seed * 23 + currentHash;
+            }
         }
     }
 }

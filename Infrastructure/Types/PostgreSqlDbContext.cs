@@ -7,8 +7,6 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
 using Npgsql.NameTranslation;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -176,12 +174,14 @@ namespace DDDCommon.Infrastructure.Types
         }
 
         private string ConvertKeyToSnake(INpgsqlNameTranslator mapper, string keyName) =>
-            ConvertGeneralToSnake(mapper, KeysRegex.Replace(keyName, match => match.Value.ToLower()));
+            ConvertGeneralToSnake(mapper, KeysRegex.Replace(keyName, 
+                match => match.Value.ToLower()));
 
         private string ConvertGeneralToSnake(INpgsqlNameTranslator mapper, string entityName) =>
-            mapper.TranslateMemberName(ModifyNameBeforeConvertion(mapper, entityName));
+            mapper.TranslateMemberName(ModifyNameBeforeConversion(mapper, entityName));
 
-        protected virtual string ModifyNameBeforeConvertion(INpgsqlNameTranslator mapper, string entityName) => entityName;
+        protected virtual string ModifyNameBeforeConversion(INpgsqlNameTranslator mapper, string entityName) =>
+            entityName;
 
     }
 }
