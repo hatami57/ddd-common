@@ -10,12 +10,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentNHibernate" Version="2.1.2" />
     <PackageReference Include="MediatR" Version="7.0.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="NHibernate" Version="5.2.5" />
+    <PackageReference Include="NHibernate.Spatial" Version="5.2.0" />
+    <PackageReference Include="NHibernate.Spatial.PostGis" Version="5.2.0" />
+    <PackageReference Include="Npgsql" Version="4.0.7" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="2.2.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime" Version="2.2.0" />
+    <PackageReference Include="Npgsql.NetTopologySuite" Version="4.0.7" />
+    <PackageReference Include="Npgsql.NodaTime" Version="4.0.7" />
+    <PackageReference Include="Npgsql.RawPostgis" Version="4.0.7" />
   </ItemGroup>
 
 </Project>

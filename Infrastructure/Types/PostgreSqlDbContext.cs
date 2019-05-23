@@ -19,6 +19,7 @@ namespace DDDCommon.Infrastructure.Types
         private readonly EventBus _bus;
         private readonly IMediator _mediator;
         private readonly DbConfigurations _dbConfigurations;
+        
         //[Obsolete]
         //public static readonly LoggerFactory MyLoggerFactory
         //    = new LoggerFactory(new[] { new ConsoleLoggerProvider((category, level)
