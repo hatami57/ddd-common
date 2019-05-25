@@ -1,52 +1,91 @@
 ﻿using DDDCommon.Domain.Interfaces;
 using DDDCommon.Domain.Types;
 using DDDCommon.Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using DDDCommon.Infrastructure.Types.EntityFramework;
+using NHibernate;
+using NHibernate.Linq;
 
 namespace DDDCommon.Infrastructure.Types
 {
     public class Repository<T> : IRepository<T> where T : class, IEntity
     {
-        protected readonly PostgreSqlDbContext DbContext;
+        protected readonly ISessionFactory SessionFactory;
 
-        public Repository(PostgreSqlDbContext dbContext)
+        public Repository(ISessionFactory sessionFactory)
         {
-            DbContext = dbContext;
+            SessionFactory = sessionFactory;
         }
 
-        public virtual Task<T> GetBy<TId>(TId id)
+        public virtual async Task<T> GetByAsync<TId>(TId id, CancellationToken cancellationToken = default)
         {
-            return DbSet.SingleOrDefaultAsync(e => (e as Entity<TId>).Id.Equals(id));
+            using (var session = SessionFactory.OpenSession())
+                return await session.GetAsync<T>(id, cancellationToken);
         }
 
-        public DbSet<T> DbSet => DbContext.Set<T>();
-
-        public virtual Task<List<T>> Get(int skip, int take)
+        public virtual async Task<List<T>> GetAsync<TKey>(int skip, int take, Expression<Func<T, TKey>> orderBy,
+            CancellationToken cancellationToken = default)
         {
-            return DbSet.Skip(skip).Take(take).ToListAsync();
+            using (var session = SessionFactory.OpenSession())
+                return await session.Query<T>().OrderBy(orderBy).Skip(skip).Take(take).ToListAsync(cancellationToken);
         }
 
-        public virtual Task<int> Add(T entity)
+        public virtual async Task<object> AddAsync(T entity, CancellationToken cancellationToken = default)
         {
-            DbSet.Add(entity);
-            return DbContext.SaveChangesAsync();
+            using (var session = SessionFactory.OpenSession())
+            using (var tx = session.BeginTransaction())
+            {
+                var res = await session.SaveAsync(entity, cancellationToken);
+                await tx.CommitAsync(cancellationToken);
+                return res;
+            }
         }
 
-        public virtual Task<int> Update(T entity)
+        public virtual async Task UpdateAsync(T entity, CancellationToken cancellationToken = default)
         {
-            DbContext.Entry(entity).State = EntityState.Modified;
-            return DbContext.SaveChangesAsync();
+            using (var session = SessionFactory.OpenSession())
+            using (var tx = session.BeginTransaction())
+            {
+                await session.UpdateAsync(entity, cancellationToken);
+                await tx.CommitAsync(cancellationToken);
+            }
+        }
+        
+        public virtual async Task UpdateEntityAsync<TId>(TId entityId, Func<T, Task<bool>> updateFunc,
+            CancellationToken cancellationToken = default)
+        {
+            using (var session = SessionFactory.OpenSession())
+            using (var tx = session.BeginTransaction())
+            {
+                var entity = await session.GetAsync<T>(entityId, cancellationToken);
+                if (!cancellationToken.IsCancellationRequested && await updateFunc(entity))
+                {
+                    await session.UpdateAsync(entity, cancellationToken);
+                    await tx.CommitAsync(cancellationToken);
+                }
+            }
         }
 
-        public virtual Task<int> Remove(T entity)
+        public virtual async Task RemoveAsync(T entity, CancellationToken cancellationToken = default)
         {
-            DbSet.Remove(entity);
-            return DbContext.SaveChangesAsync();
+            using (var session = SessionFactory.OpenSession())
+            using (var tx = session.BeginTransaction())
+            {
+                await session.DeleteAsync(entity, cancellationToken);
+                await tx.CommitAsync(cancellationToken);
+            }
+        }
+
+        public virtual async Task<long> CountAsync(CancellationToken cancellationToken = default)
+        {
+            using (var session = SessionFactory.OpenSession())
+                return await session.Query<T>().LongCountAsync(cancellationToken: cancellationToken);
         }
     }
 }

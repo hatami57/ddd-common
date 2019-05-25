@@ -46,6 +46,14 @@ namespace DDDCommon.Utils
             _addedItems.Add(item);
         }
 
+        public void AddItems(IEnumerable<T> items)
+        {
+            foreach (var item in items)
+            {
+                AddItem(item);
+            }
+        }
+
         public void UpdateItem(T oldItem, T newItem)
         {
             var oldItemIndex = _items.IndexOf(oldItem);

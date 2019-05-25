@@ -1,4 +1,4 @@
-using DDDCommon.Infrastructure.Types.NHibernate.Mappers;
+using DDDCommon.Infrastructure.Types.NHibernate.Conventions;
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
 using NHibernate;
@@ -10,40 +10,43 @@ using Npgsql;
 
 namespace DDDCommon.Infrastructure.Types.NHibernate
 {
-    public class PostgreSqlNHibernateHelper
+    public class PostgreSqlSessionFactoryHelper
     {
-        private readonly ISessionFactory _factory;
+        public ISessionFactory SessionFactory { get; }
 
-        public PostgreSqlNHibernateHelper(DbConfigurations dbConfigurations)
+        public PostgreSqlSessionFactoryHelper(DbConfigurations dbConfigurations)
         {
-            NpgsqlConnection.GlobalTypeMapper.UseNodaTime();
-            NpgsqlConnection.GlobalTypeMapper.UseRawPostgis();
+            if (dbConfigurations.UseNodaTime) NpgsqlConnection.GlobalTypeMapper.UseNodaTime();
 
             var dbConfigurations1 = dbConfigurations;
+            var persistenceCfg = PostgreSQLConfiguration.Standard
+                .Provider<global::NHibernate.Connection.DriverConnectionProvider>()
+                .Dialect<PostgreSQL83Dialect>()
+                .Driver<NpgsqlDriverExtended>()
+                .ConnectionString(dbConfigurations1.ConnectionString);
+            if (dbConfigurations.UseNetTopologySuite)
+            {
+                NpgsqlConnection.GlobalTypeMapper.UseRawPostgis();
+                persistenceCfg.Dialect<global::NHibernate.Spatial.Dialect.PostGis20Dialect>();
+            }
             var cfg = Fluently.Configure()
-                .Database(PostgreSQLConfiguration.Standard
-                    .Provider<global::NHibernate.Connection.DriverConnectionProvider>()
-                    .Dialect<PostgreSQL83Dialect>()
-                    .Dialect<global::NHibernate.Spatial.Dialect.PostGis20Dialect>()
-                    .Driver<NpgsqlDriverExtended>()
-                    .ConnectionString(dbConfigurations1.ConnectionString)
-                )
+                .Database(persistenceCfg)
                 .Mappings(x =>
                 {
                     dbConfigurations1.EntityTypeAssemblies.ForEach(y => x.FluentMappings.AddFromAssembly(y));
+                    x.FluentMappings.Conventions.Add<GeneralConventions>();
                     x.FluentMappings.Conventions.Add<NodaTimeConventions>();
                     x.FluentMappings.Conventions.Add<PostGisConventions>();
                     x.FluentMappings.Conventions.Add<ListConventions>();
+                    x.FluentMappings.Conventions.Add<RangeConventions>();
+                    x.FluentMappings.Conventions.Add<JsonConventions>();
                 })
                 .ExposeConfiguration(x => { new SchemaExport(x).Execute(false, true, false); })
                 .BuildConfiguration();
             cfg.AddAuxiliaryDatabaseObject(new SpatialAuxiliaryDatabaseObject(cfg));
             Metadata.AddMapping(cfg, MetadataClass.GeometryColumn);
             Metadata.AddMapping(cfg, MetadataClass.SpatialReferenceSystem);
-            _factory = cfg.BuildSessionFactory();
-            var exp = new SchemaExport(cfg);
+            SessionFactory = cfg.BuildSessionFactory();
         }
-
-        public ISession OpenSession() => _factory.OpenSession();
     }
 }

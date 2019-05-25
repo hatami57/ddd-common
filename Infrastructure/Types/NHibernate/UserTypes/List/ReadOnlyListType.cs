@@ -1,25 +1,20 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Linq;
-using NHibernate;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
-using NodaTime;
 using Npgsql;
-using NpgsqlTypes;
 
-namespace DDDCommon.Infrastructure.Types.NHibernate.UserTypes
+namespace DDDCommon.Infrastructure.Types.NHibernate.UserTypes.List
 {
-    public abstract class ListType<T> : IUserType
+    public abstract class ReadOnlyListType<T> : IUserType
     {
         public new bool Equals(object x, object y)
         {
-            var xList = x as List<T>;
-            var yList = y as List<T>;
+            var xList = x as IReadOnlyList<T>;
+            var yList = y as IReadOnlyList<T>;
             if (xList == null && yList == null) return true;
             if (xList == null || yList == null) return false;
             if (xList.Count != yList.Count) return false;
@@ -36,7 +31,7 @@ namespace DDDCommon.Infrastructure.Types.NHibernate.UserTypes
             unchecked
             {
                 var hash = 19;
-                foreach (var item in (IList) x)
+                foreach (var item in (IReadOnlyList<T>) x)
                 {
                     hash = hash * 31 + item.GetHashCode();
                 }
@@ -57,29 +52,27 @@ namespace DDDCommon.Infrastructure.Types.NHibernate.UserTypes
             param.NpgsqlValue = value ?? DBNull.Value;
         }
 
-        public object DeepCopy(object value)
-        {
-            return value;
-        }
+        public object DeepCopy(object value) => value == null ? null : DeepCopyNotNull(value);
 
         public object Replace(object original, object target, object owner)
         {
-            return original;
+            return Equals(original, target) ? original : DeepCopy(original);
         }
 
         public object Assemble(object cached, object owner)
         {
-            return cached;
+            return cached == null ? null : DeepCopy(cached);
         }
 
         public object Disassemble(object value)
         {
-            return value;
+            return value == null ? null : DeepCopy(value);
         }
 
-        public abstract SqlType[] SqlTypes { get; }
-
         public Type ReturnedType => typeof(List<T>);
-        public bool IsMutable => false;
+        public bool IsMutable => true;
+        
+        public abstract SqlType[] SqlTypes { get; }
+        protected abstract object DeepCopyNotNull(object value);
     }
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using NHibernate;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
@@ -9,19 +8,13 @@ using NodaTime;
 using Npgsql;
 using NpgsqlTypes;
 
-namespace DDDCommon.Infrastructure.Types.NHibernate.UserTypes
+namespace DDDCommon.Infrastructure.Types.NHibernate.UserTypes.NodaTime
 {
     public class LocalDateType : IUserType
     {
-        public new bool Equals(object x, object y)
-        {
-            return object.Equals(x, y);
-        }
+        public new bool Equals(object x, object y) => object.Equals(x, y);
 
-        public int GetHashCode(object x)
-        {
-            return x == null ? 0 : x.GetHashCode();
-        }
+        public int GetHashCode(object x) => x == null ? 0 : x.GetHashCode();
 
         public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
         {
@@ -32,32 +25,19 @@ namespace DDDCommon.Infrastructure.Types.NHibernate.UserTypes
         public void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
         {
             var param = (NpgsqlParameter)cmd.Parameters[index];
-            param.NpgsqlDbType = NpgsqlDbType.Date;
             param.NpgsqlValue = value ?? DBNull.Value;
         }
 
-        public object DeepCopy(object value)
-        {
-            return value;
-        }
+        public object DeepCopy(object value) => value;
 
-        public object Replace(object original, object target, object owner)
-        {
-            return original;
-        }
+        public object Replace(object original, object target, object owner) => original;
 
-        public object Assemble(object cached, object owner)
-        {
-            return cached;
-        }
+        public object Assemble(object cached, object owner) => cached;
 
-        public object Disassemble(object value)
-        {
-            return value;
-        }
+        public object Disassemble(object value) => value;
 
         public SqlType[] SqlTypes => new SqlType[] { new NpgsqlExtendedSqlType(DbType.Date, NpgsqlDbType.Date) };
-        public Type ReturnedType => typeof(LocalTime);
+        public Type ReturnedType => typeof(LocalDate);
         public bool IsMutable => false;
     }
 }

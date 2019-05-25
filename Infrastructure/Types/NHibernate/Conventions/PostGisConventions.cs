@@ -1,11 +1,9 @@
-using System;
-using DDDCommon.Infrastructure.Types.NHibernate.UserTypes;
+using DDDCommon.Infrastructure.Types.NHibernate.UserTypes.Postgis;
 using FluentNHibernate.Conventions;
 using FluentNHibernate.Conventions.Instances;
 using NetTopologySuite.Geometries;
-using NodaTime;
 
-namespace DDDCommon.Infrastructure.Types.NHibernate.Mappers
+namespace DDDCommon.Infrastructure.Types.NHibernate.Conventions
 {
     public class PostGisConventions : IPropertyConvention
     {

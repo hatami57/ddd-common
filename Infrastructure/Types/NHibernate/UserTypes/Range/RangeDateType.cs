@@ -1,13 +1,14 @@
 using System.Data;
 using NHibernate.SqlTypes;
+using NodaTime;
 using NpgsqlTypes;
 
-namespace DDDCommon.Infrastructure.Types.NHibernate.UserTypes
+namespace DDDCommon.Infrastructure.Types.NHibernate.UserTypes.Range
 {
-    public class ListIntType : ListType<int>
+    public class RangeDateType : RangeType<LocalDate>
     {
         public override SqlType[] SqlTypes =>
             new SqlType[] {new NpgsqlExtendedSqlType(DbType.Object, 
-                NpgsqlDbType.Array | NpgsqlDbType.Integer)};
+                NpgsqlDbType.Range | NpgsqlDbType.Date)};
     }
 }

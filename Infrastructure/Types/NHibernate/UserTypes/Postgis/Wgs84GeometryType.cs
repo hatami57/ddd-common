@@ -1,9 +1,6 @@
-using System.Data;
 using NHibernate.Spatial.Type;
-using NHibernate.SqlTypes;
-using NpgsqlTypes;
 
-namespace DDDCommon.Infrastructure.Types.NHibernate.UserTypes
+namespace DDDCommon.Infrastructure.Types.NHibernate.UserTypes.Postgis
 {
     public class Wgs84GeometryType : PostGisGeometryType
     {

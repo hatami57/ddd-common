@@ -1,4 +1,8 @@
-﻿using DDDCommon.Utils;
+﻿using System;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using DDDCommon.Utils;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -6,12 +10,8 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
 using Npgsql.NameTranslation;
-using System;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace DDDCommon.Infrastructure.Types
+namespace DDDCommon.Infrastructure.Types.EntityFramework
 {
     public class PostgreSqlDbContext : DbContext
     {
