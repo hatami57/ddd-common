@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using DDDCommon.Infrastructure.Types.EntityFramework;
 using NHibernate;
 using NHibernate.Linq;
+using Remotion.Linq.Clauses.ResultOperators;
 
 namespace DDDCommon.Infrastructure.Types
 {
@@ -29,11 +30,20 @@ namespace DDDCommon.Infrastructure.Types
                 return await session.GetAsync<T>(id, cancellationToken);
         }
 
+        public virtual async Task<List<T>> GetByAsync<TKey>(int skip, int take, Expression<Func<T, bool>> where,
+            Expression<Func<T, TKey>> orderBy, CancellationToken cancellationToken = default)
+        {
+            using (var session = SessionFactory.OpenSession())
+                return await session.Query<T>().Where(where).OrderBy(orderBy).Skip(skip).Take(take)
+                    .ToListAsync(cancellationToken);
+        }
+
         public virtual async Task<List<T>> GetAsync<TKey>(int skip, int take, Expression<Func<T, TKey>> orderBy,
             CancellationToken cancellationToken = default)
         {
             using (var session = SessionFactory.OpenSession())
-                return await session.Query<T>().OrderBy(orderBy).Skip(skip).Take(take).ToListAsync(cancellationToken);
+                return await session.Query<T>().OrderBy(orderBy).Skip(skip).Take(take)
+                    .ToListAsync(cancellationToken);
         }
 
         public virtual async Task<object> AddAsync(T entity, CancellationToken cancellationToken = default)

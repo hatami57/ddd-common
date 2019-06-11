@@ -1,3 +1,4 @@
+using System.IO;
 using DDDCommon.Infrastructure.Types.NHibernate.Conventions;
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
@@ -10,11 +11,9 @@ using Npgsql;
 
 namespace DDDCommon.Infrastructure.Types.NHibernate
 {
-    public class PostgreSqlSessionFactoryHelper
+    public static class PostgreSqlSessionFactoryHelper
     {
-        public ISessionFactory SessionFactory { get; }
-
-        public PostgreSqlSessionFactoryHelper(DbConfigurations dbConfigurations)
+        public static ISessionFactory Create(DbConfigurations dbConfigurations)
         {
             if (dbConfigurations.UseNodaTime) NpgsqlConnection.GlobalTypeMapper.UseNodaTime();
 
@@ -29,24 +28,38 @@ namespace DDDCommon.Infrastructure.Types.NHibernate
                 NpgsqlConnection.GlobalTypeMapper.UseRawPostgis();
                 persistenceCfg.Dialect<global::NHibernate.Spatial.Dialect.PostGis20Dialect>();
             }
+
             var cfg = Fluently.Configure()
                 .Database(persistenceCfg)
                 .Mappings(x =>
                 {
                     dbConfigurations1.EntityTypeAssemblies.ForEach(y => x.FluentMappings.AddFromAssembly(y));
+                    if (dbConfigurations.UseNodaTime)
+                        x.FluentMappings.Conventions.Add<NodaTimeConventions>();
+                    if (dbConfigurations.UseNetTopologySuite)
+                        x.FluentMappings.Conventions.Add<PostGisConventions>();
                     x.FluentMappings.Conventions.Add<GeneralConventions>();
-                    x.FluentMappings.Conventions.Add<NodaTimeConventions>();
-                    x.FluentMappings.Conventions.Add<PostGisConventions>();
                     x.FluentMappings.Conventions.Add<ListConventions>();
                     x.FluentMappings.Conventions.Add<RangeConventions>();
                     x.FluentMappings.Conventions.Add<JsonConventions>();
                 })
-                .ExposeConfiguration(x => { new SchemaExport(x).Execute(false, true, false); })
+                .ExposeConfiguration(x =>
+                {
+                    if (!string.IsNullOrWhiteSpace(dbConfigurations.SchemaExportFilename))
+                        new SchemaExport(x).Execute(script =>
+                                File.AppendAllText(dbConfigurations.SchemaExportFilename, script),
+                            false, false);
+                })
                 .BuildConfiguration();
-            cfg.AddAuxiliaryDatabaseObject(new SpatialAuxiliaryDatabaseObject(cfg));
-            Metadata.AddMapping(cfg, MetadataClass.GeometryColumn);
-            Metadata.AddMapping(cfg, MetadataClass.SpatialReferenceSystem);
-            SessionFactory = cfg.BuildSessionFactory();
+
+            if (dbConfigurations.UseNetTopologySuite)
+            {
+                cfg.AddAuxiliaryDatabaseObject(new SpatialAuxiliaryDatabaseObject(cfg));
+                Metadata.AddMapping(cfg, MetadataClass.GeometryColumn);
+                Metadata.AddMapping(cfg, MetadataClass.SpatialReferenceSystem);
+            }
+
+            return cfg.BuildSessionFactory();
         }
     }
 }

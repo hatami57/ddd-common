@@ -12,5 +12,6 @@ namespace DDDCommon.Infrastructure.Types
         public string ConnectionString { get; set; }
         public bool UseNodaTime { get; set; }
         public bool UseNetTopologySuite { get; set; }
+        public string SchemaExportFilename { get; set; }
     }
 }
