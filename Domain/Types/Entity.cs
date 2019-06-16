@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using DDDCommon.Domain.Interfaces;
 
 namespace DDDCommon.Domain.Types
 {
-    public abstract class Entity<TId> : IEquatable<Entity<TId>>
+    public abstract class Entity<TId> : IEntity, IEquatable<Entity<TId>>
     {
         public virtual TId Id { get; protected set; }
 
