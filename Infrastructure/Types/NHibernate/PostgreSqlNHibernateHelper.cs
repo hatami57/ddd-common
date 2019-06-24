@@ -22,7 +22,8 @@ namespace DDDCommon.Infrastructure.Types.NHibernate
                 .Provider<global::NHibernate.Connection.DriverConnectionProvider>()
                 .Dialect<PostgreSQL83Dialect>()
                 .Driver<NpgsqlDriverExtended>()
-                .ConnectionString(dbConfigurations1.ConnectionString);
+                .ConnectionString(dbConfigurations1.ConnectionString)
+                .ShowSql();
             if (dbConfigurations.UseNetTopologySuite)
             {
                 NpgsqlConnection.GlobalTypeMapper.UseRawPostgis();
