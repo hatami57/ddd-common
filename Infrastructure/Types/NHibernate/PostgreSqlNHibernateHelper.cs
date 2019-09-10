@@ -2,6 +2,7 @@ using System.IO;
 using DDDCommon.Infrastructure.Types.NHibernate.Conventions;
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
+using FluentNHibernate.Conventions.Helpers;
 using NHibernate;
 using NHibernate.Dialect;
 using NHibernate.Spatial.Mapping;
@@ -35,6 +36,7 @@ namespace DDDCommon.Infrastructure.Types.NHibernate
                 .Mappings(x =>
                 {
                     dbConfigurations1.EntityTypeAssemblies.ForEach(y => x.FluentMappings.AddFromAssembly(y));
+                    x.FluentMappings.Conventions.Setup(y => y.Add(AutoImport.Never()));
                     if (dbConfigurations.UseNodaTime)
                         x.FluentMappings.Conventions.Add<NodaTimeConventions>();
                     if (dbConfigurations.UseNetTopologySuite)
