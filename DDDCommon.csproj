@@ -6,7 +6,7 @@
     <Company>Meteor</Company>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>latest</LangVersion>
-    <PackageVersion>1.2.0</PackageVersion>
+    <PackageVersion>1.2.2</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>

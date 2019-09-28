@@ -167,9 +167,11 @@ namespace Serilog.Sinks.PostgreSql
 
         public override object GetValue(LogEvent logEvent, IFormatProvider formatProvider = null)
         {
-            return logEvent.Properties.TryGetValue("RequestId", out var value)
-                ? value.ToString()
-                : null;
+            if (!logEvent.Properties.TryGetValue("RequestId", out var value))
+                return null;
+            
+            var str = value.ToString();
+            return str.Substring(1, str.Length - 2);
         }
     }
 
