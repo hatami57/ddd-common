@@ -29,6 +29,7 @@ namespace DDDCommon.Utils
             };
             if (error.Details != null)
                 o.Add("details", JToken.FromObject(error.Details));
+            
             o.WriteTo(writer);
         }
     }
