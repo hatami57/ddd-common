@@ -34,7 +34,7 @@ namespace DDDCommon.Utils
             {
                 Log.Error(e, "OperationResult");
                 return new OperationResult(false,
-                    e as Error ?? Errors.InternalError(e.Message));
+                    e as Error ?? Errors.InternalError(null, e));
             }
         }
         
@@ -48,7 +48,7 @@ namespace DDDCommon.Utils
             {
                 Log.Error(e, "OperationResult");
                 return new OperationResult(false,
-                    e as Error ?? Errors.InternalError(e.Message));
+                    e as Error ?? Errors.InternalError(null, e));
             }
         }
     }
@@ -78,7 +78,7 @@ namespace DDDCommon.Utils
             {
                 Log.Error(e, "OperationResult<{T}>", typeof(T).FullName);
                 return new OperationResult<T>(false, default,
-                    e as Error ?? Errors.InternalError(e.Message));
+                    e as Error ?? Errors.InternalError(null, e));
             }
         }
         
@@ -92,7 +92,7 @@ namespace DDDCommon.Utils
             {
                 Log.Error(e, "OperationResult<{T}>", typeof(T).FullName);
                 return new OperationResult<T>(false, default,
-                    e as Error ?? Errors.InternalError(e.Message));
+                    e as Error ?? Errors.InternalError(null, e));
             }
         }
     }

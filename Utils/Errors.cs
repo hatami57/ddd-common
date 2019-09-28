@@ -6,8 +6,8 @@ namespace DDDCommon.Utils
 {
     public static class Errors
     {
-        public static Error InternalError(object details = null) =>
-            new Error(1, "internal_error", details);
+        public static Error InternalError(object details = null, Exception innerException = null) =>
+            new Error(1, "internal_error", details, innerException);
         public static Error NotFound(object details = null) =>
             new Error(2, "not_found", details);
         public static Error AlreadyDone(object details = null) =>
