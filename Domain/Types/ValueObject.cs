@@ -21,7 +21,7 @@ namespace DDDCommon.Domain.Types
             return !(obj1 == obj2);
         }
 
-        public bool Equals(ValueObject obj)
+        public virtual bool Equals(ValueObject obj)
         {
             return Equals(obj as object);
         }

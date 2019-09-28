@@ -5,6 +5,7 @@ using FluentNHibernate.Cfg.Db;
 using FluentNHibernate.Conventions.Helpers;
 using NHibernate;
 using NHibernate.Dialect;
+using NHibernate.Logging.Serilog;
 using NHibernate.Spatial.Mapping;
 using NHibernate.Spatial.Metadata;
 using NHibernate.Tool.hbm2ddl;
@@ -16,6 +17,8 @@ namespace DDDCommon.Infrastructure.Types.NHibernate
     {
         public static ISessionFactory Create(DbConfigurations dbConfigurations)
         {
+            NHibernateLogger.SetLoggersFactory(new SerilogLoggerFactory());
+            
             if (dbConfigurations.UseNodaTime) NpgsqlConnection.GlobalTypeMapper.UseNodaTime();
 
             var dbConfigurations1 = dbConfigurations;
@@ -23,8 +26,7 @@ namespace DDDCommon.Infrastructure.Types.NHibernate
                 .Provider<global::NHibernate.Connection.DriverConnectionProvider>()
                 .Dialect<PostgreSQL83Dialect>()
                 .Driver<NpgsqlDriverExtended>()
-                .ConnectionString(dbConfigurations1.ConnectionString)
-                .ShowSql();
+                .ConnectionString(dbConfigurations1.ConnectionString);
             if (dbConfigurations.UseNetTopologySuite)
             {
                 NpgsqlConnection.GlobalTypeMapper.UseRawPostgis();

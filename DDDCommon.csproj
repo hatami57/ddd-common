@@ -6,7 +6,7 @@
     <Company>Meteor</Company>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>latest</LangVersion>
-    <PackageVersion>1.0.8</PackageVersion>
+    <PackageVersion>1.2.0</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +15,7 @@
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="NHibernate" Version="5.2.5" />
+    <PackageReference Include="NHibernate.Logging.Serilog" Version="5.1.3" />
     <PackageReference Include="NHibernate.Spatial" Version="5.2.0" />
     <PackageReference Include="NHibernate.Spatial.PostGis" Version="5.2.0" />
     <PackageReference Include="Npgsql" Version="4.0.7" />
@@ -24,6 +25,12 @@
     <PackageReference Include="Npgsql.NetTopologySuite" Version="4.0.7" />
     <PackageReference Include="Npgsql.NodaTime" Version="4.0.7" />
     <PackageReference Include="Npgsql.RawPostgis" Version="4.0.7" />
+    <PackageReference Include="Serilog" Version="2.8.0" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="2.1.3" />
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="4.0.0" />
+    <PackageReference Include="Serilog.Sinks.PostgreSQL" Version="2.1.0" />
   </ItemGroup>
 
 </Project>

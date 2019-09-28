@@ -6,17 +6,19 @@ namespace DDDCommon.Utils
 {
     public static class Errors
     {
-        public static Error InternalError(string details = null) =>
-            new Error { Code = 1, Text = "internal_error", Details = details };
-        public static Error NotFound(string details = null) =>
-            new Error { Code = 2, Text = "not_found", Details = details };
-        public static Error AlreadyDone(string details = null) =>
-            new Error { Code = 3, Text = "already_done", Details = details };
-        public static Error InvalidOperation(string details = null) =>
-            new Error { Code = 4, Text = "invalid_operation", Details = details };
-        public static Error DatabaseError(string details = null) =>
-            new Error { Code = 5, Text = "database_error", Details = details };
-        public static Error DuplicateKey(string details = null) =>
-            new Error { Code = 6, Text = "duplicate_key", Details = details };
+        public static Error InternalError(object details = null) =>
+            new Error(1, "internal_error", details);
+        public static Error NotFound(object details = null) =>
+            new Error(2, "not_found", details);
+        public static Error AlreadyDone(object details = null) =>
+            new Error(3, "already_done", details);
+        public static Error InvalidOperation(object details = null) =>
+            new Error(4, "invalid_operation", details);
+        public static Error DatabaseError(object details = null) =>
+            new Error(5, "database_error", details);
+        public static Error DuplicateKey(object details = null) =>
+            new Error(6, "duplicate_key", details);
+        public static Error AccessDenied(object details = null) =>
+            new Error(7, "access_denied", details);
     }
 }

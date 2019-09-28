@@ -25,9 +25,10 @@ namespace DDDCommon.Utils
             var o = new JObject
             {
                 { "code", error.Code },
-                { "text", error.Text },
-                { "details", error.Details }
+                { "message", error.Message }
             };
+            if (error.Details != null)
+                o.Add("details", JToken.FromObject(error.Details));
             o.WriteTo(writer);
         }
     }

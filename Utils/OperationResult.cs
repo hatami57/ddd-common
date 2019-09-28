@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace DDDCommon.Utils
 {
@@ -31,6 +32,7 @@ namespace DDDCommon.Utils
             }
             catch (Exception e)
             {
+                Log.Error(e, "OperationResult");
                 return new OperationResult(false,
                     e as Error ?? Errors.InternalError(e.Message));
             }
@@ -44,6 +46,7 @@ namespace DDDCommon.Utils
             }
             catch (Exception e)
             {
+                Log.Error(e, "OperationResult");
                 return new OperationResult(false,
                     e as Error ?? Errors.InternalError(e.Message));
             }
@@ -73,6 +76,7 @@ namespace DDDCommon.Utils
             }
             catch (Exception e)
             {
+                Log.Error(e, "OperationResult<{T}>", typeof(T).FullName);
                 return new OperationResult<T>(false, default,
                     e as Error ?? Errors.InternalError(e.Message));
             }
@@ -86,6 +90,7 @@ namespace DDDCommon.Utils
             }
             catch (Exception e)
             {
+                Log.Error(e, "OperationResult<{T}>", typeof(T).FullName);
                 return new OperationResult<T>(false, default,
                     e as Error ?? Errors.InternalError(e.Message));
             }
@@ -96,7 +101,13 @@ namespace DDDCommon.Utils
     public class Error : Exception
     {
         public int Code { get; set; }
-        public string Text { get; set; }
-        public string Details { get; set; }
+        public object Details { get; set; }
+
+        public Error(int code, string message, object details = null, Exception innerException = null)
+            : base(message, innerException)
+        {
+            Code = code;
+            Details = details;
+        }
     }
 }
