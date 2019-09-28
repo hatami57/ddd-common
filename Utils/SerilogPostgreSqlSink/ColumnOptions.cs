@@ -6,7 +6,7 @@ namespace Serilog.Sinks.PostgreSql
     {
         public static IDictionary<string, ColumnWriterBase> Default => new Dictionary<string, ColumnWriterBase>
         {
-            {DefaultColumnNames.RenderedMesssage, new RenderedMessageColumnWriter()},
+            {DefaultColumnNames.RenderedMessage, new RenderedMessageColumnWriter()},
             {DefaultColumnNames.MessageTemplate, new MessageTemplateColumnWriter()},
             {DefaultColumnNames.Level, new LevelColumnWriter()},
             {DefaultColumnNames.Exception, new ExceptionColumnWriter()},
@@ -17,7 +17,7 @@ namespace Serilog.Sinks.PostgreSql
 
     public static class DefaultColumnNames
     {
-        public const string RenderedMesssage = "message";
+        public const string RenderedMessage = "message";
         public const string MessageTemplate = "message_template";
         public const string Level = "level";
         public const string Exception = "exception";
