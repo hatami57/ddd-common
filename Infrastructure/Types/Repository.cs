@@ -8,7 +8,6 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using DDDCommon.Infrastructure.Types.EntityFramework;
 using NHibernate;
 using NHibernate.Linq;
 using Remotion.Linq.Clauses.ResultOperators;
