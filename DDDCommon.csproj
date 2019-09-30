@@ -6,14 +6,14 @@
     <Company>Meteor</Company>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>latest</LangVersion>
-    <PackageVersion>1.2.6</PackageVersion>
+    <PackageVersion>1.2.7</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="FluentNHibernate" Version="2.1.2" />
-    <PackageReference Include="GeoAPI.Core" Version="1.7.5" />
     <PackageReference Include="MediatR" Version="7.0.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="NetTopologySuite.Core" Version="1.15.3" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="NHibernate" Version="5.2.6" />
     <PackageReference Include="NHibernate.Logging.Serilog" Version="5.1.3" />
