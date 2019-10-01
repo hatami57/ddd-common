@@ -174,6 +174,25 @@ namespace Serilog.Sinks.PostgreSql
             return str.Substring(1, str.Length - 2);
         }
     }
+    
+    /// <summary>
+    /// Writes App name if exists
+    /// </summary>
+    public class AppColumnWriter : ColumnWriterBase
+    {
+        public AppColumnWriter(NpgsqlDbType dbType = NpgsqlDbType.Varchar) : base(dbType)
+        {
+        }
+
+        public override object GetValue(LogEvent logEvent, IFormatProvider formatProvider = null)
+        {
+            if (!logEvent.Properties.TryGetValue("RequestId", out var value))
+                return null;
+            
+            var str = value.ToString();
+            return str.Substring(1, str.Length - 2);
+        }
+    }
 
     /// <summary>
     /// Writes log event as json

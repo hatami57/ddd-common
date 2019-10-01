@@ -132,24 +132,27 @@ namespace Serilog.Sinks.PostgreSql
 
         protected override async Task EmitBatchAsync(IEnumerable<LogEvent> events)
         {
-            using (var connection = new NpgsqlConnection(_connectionString))
-            { 
-                await connection.OpenAsync();
+            try
+            {
+                using (var connection = new NpgsqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
 
-                if (!_isTableCreated)
-                {
-                    TableCreator.CreateTable(connection, _fullTableName, _columnOptions);
-                    _isTableCreated = true;
-                }
+                    if (!_isTableCreated)
+                    {
+                        TableCreator.CreateTable(connection, _fullTableName, _columnOptions);
+                        _isTableCreated = true;
+                    }
 
-                if (_useCopy)
-                {
-                    ProcessEventsByCopyCommand(events, connection);
+                    if (_useCopy)
+                        ProcessEventsByCopyCommand(events, connection);
+                    else
+                        await ProcessEventsByInsertStatements(events, connection);
                 }
-                else
-                {
-                    await ProcessEventsByInsertStatements(events, connection);
-                }
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "could not insert logs to PostgreSQL database");
             }
         }
 
